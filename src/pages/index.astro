@@ -1,0 +1,46 @@
+---
+import MainLayout from "../layout/MainLayout.astro";
+import profileImage from "../assets/profile.webp";
+import Card from "../components/Card.astro";
+import { config } from "../lib/config";
+
+let loading = true;
+let data = [];
+
+try {
+  const articles = await fetch(`https://dev.to/api/articles?username=${config.username}`).then((res) => res.json());
+  data = articles;
+} catch (error) {
+  console.error("Error fetching articles:", error);
+  data = [];
+} finally {
+  loading = false;
+}
+---
+
+<MainLayout title="Wint Khant Lin">
+  <div class="p-4 my-10">
+    <div class="text-center">
+      <img
+        src={profileImage.src}
+        alt="Happer"
+        class="rounded-full mx-auto mb-4"
+      />
+      <p class="text-lg">
+        A 15 years old college student from Myanmar 🇲🇲. I love coding! ❤️
+      </p>
+    </div>
+  </div>
+
+  {loading ? (
+    <div>
+      <p>Loading...</p>
+    </div>
+  ) : (
+    <div>
+      {data.map((post: any) => (
+        <Card {...post} />
+      ))}
+    </div>
+  )}
+</MainLayout>

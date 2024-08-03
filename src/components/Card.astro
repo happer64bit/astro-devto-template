@@ -1,0 +1,22 @@
+---
+const { slug, title, published_at, reading_time_minutes, tags } = Astro.props;
+---
+
+<a
+  href={`/posts/${slug}`}
+  class="block p-4 hover:bg-white/5 transition-colors duration-200"
+>
+  <div class="text-lg font-semibold mb-2">{title}</div>
+  <div class="text-sm text-gray-500">
+    {published_at} • {reading_time_minutes} min read
+  </div>
+  <div class="mt-2">
+    {
+      tags.split(",").map((tag: string) => (
+        <span class="inline-block bg-gray-200 rounded-full px-3 py-1 text-sm font-semibold text-gray-700 mr-2">
+          #{tag}
+        </span>
+      ))
+    }
+  </div>
+</a>

@@ -1,0 +1,36 @@
+---
+import { config } from "../../lib/config";
+import type { Article } from "../../types";
+import BlogLayout from './../../layout/BlogLayout.astro';
+import { marked } from 'marked';
+
+const { slug } = Astro.params;
+
+const fetchData = async (): Promise<Article | null> => {
+  try {
+    const res = await fetch(`https://dev.to/api/articles/${config.username}/${slug}`);
+    if (!res.ok) {
+      throw new Error('Network response was not ok');
+    }
+    const data: Article = await res.json();
+    data.body_html = await marked.parse(data.body_markdown);
+    return data;
+  } catch (error) {
+    console.error("Failed to fetch article:", error);
+    return null;
+  }
+};
+
+const data: Article | null = await fetchData();
+---
+
+<BlogLayout cover_image={data?.cover_image} title={data?.title}>
+  {data != null ? (
+    <div class="my-10 prose prose-invert w-full max-w-[800px] mx-auto p-4">
+      <h1>{data.title}</h1>
+      <div set:html={data.body_html}></div>
+    </div>
+  ) : (
+    <p>Article not found.</p>
+  )}
+</BlogLayout>
